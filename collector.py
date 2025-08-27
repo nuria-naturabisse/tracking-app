@@ -53,3 +53,12 @@ async def collect_event(request: Request):
     conn.commit()
     conn.close()
     return {"status": "ok"}
+
+
+# 🔹 NUEVO ENDPOINT para listar eventos
+@app.get("/events")
+def list_events():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("""
+        SELECT event
