@@ -61,4 +61,23 @@ def list_events():
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     c.execute("""
-        SELECT event
+        SELECT event_name, client_id, utm_source, utm_medium, utm_campaign, value, event_time 
+        FROM events 
+        ORDER BY event_time DESC 
+        LIMIT 20
+    """)
+    rows = c.fetchall()
+    conn.close()
+    # lo devolvemos como lista de dicts para que se vea bonito en JSON
+    return [
+        {
+            "event_name": r[0],
+            "client_id": r[1],
+            "utm_source": r[2],
+            "utm_medium": r[3],
+            "utm_campaign": r[4],
+            "value": r[5],
+            "event_time": r[6]
+        }
+        for r in rows
+    ]
