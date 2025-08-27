@@ -81,3 +81,27 @@ def list_events():
         }
         for r in rows
     ]
+@app.get("/stats")
+def stats():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    # total de eventos
+    c.execute("SELECT COUNT(*) FROM events")
+    total_events = c.fetchone()[0]
+
+    # total de revenue (suma de value)
+    c.execute("SELECT SUM(value) FROM events")
+    total_revenue = c.fetchone()[0]
+
+    # breakdown por utm_source
+    c.execute("SELECT utm_source, COUNT(*) as events, SUM(value) as revenue FROM events GROUP BY utm_source")
+    rows = c.fetchall()
+    conn.close()
+
+    return {
+        "total_events": total_events,
+        "total_revenue": total_revenue,
+        "by_channel": [
+            {"utm_source": r[0], "events": r[1], "revenue": r[2]} for r in rows
+        ]
+    }
